@@ -1,13 +1,21 @@
-﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using AddressBookThreading;
 using System.Collections.Generic;
 
-namespace AddressBookThreading
+namespace TestThreading
 {
-    class Program
+    [TestClass]
+    public class UnitTest1
     {
-        static void Main(string[] args)
+        /// <summary>
+        /// UC 21
+        /// Adds Multiple contacts to database using multi threading
+        /// </summary>
+        [TestMethod]
+        public void InsertMultipleContacts()
         {
-            Console.WriteLine("Hello World!");
+            ///Arrange
+            AddressBookRepository addressBookRepository = new AddressBookRepository();
             List<ContactDetails> contactsList = new List<ContactDetails>();
             contactsList.Add(new ContactDetails
             {
@@ -32,7 +40,7 @@ namespace AddressBookThreading
                 City = "Khammam",
                 State = "AndhraPradesh",
                 Country = "India",
-                AddressBookName = "Ravi",
+                AddressBookName = "Mukhesh",
                 ContactType = "Friend"
             });
             contactsList.Add(new ContactDetails
@@ -46,12 +54,15 @@ namespace AddressBookThreading
                 State = "Karnataka",
                 Country = "India",
                 AddressBookName = "My Book",
-                ContactType = "Relative"
+                ContactType = "Family"
             });
-            AddressBookRepository addressBookRepository = new AddressBookRepository();
+            // Act
             addressBookRepository.InsertMultipleContactsWithThreads(contactsList);
-
+            List<ContactDetails> actual = addressBookRepository.GetAddressBookDetails().FindAll(contact => (contact.FirstName == "Manish" && contact.LastName == "Pandey") ||
+                                                                                           (contact.FirstName == "Vijay" && contact.LastName == "Sankar") ||
+                                                                                           (contact.FirstName == "Rashid" && contact.LastName == "Khan"));
+            ///Assert
+            CollectionAssert.AreEqual(actual, contactsList);
         }
     }
 }
-
