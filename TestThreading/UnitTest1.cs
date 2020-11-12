@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using RestSharp;
 using System.Net;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace TestThreading
 {
@@ -102,8 +103,64 @@ namespace TestThreading
             Assert.AreEqual(3, dataResponse.Count);
             foreach (ContactDetails contact in dataResponse)
             {
-                System.Console.WriteLine("FirstName: " + contact.FirstName + " LastName: " + contact.LastName + " PhoneNumber"+ contact.PhoneNumber);
+                System.Console.WriteLine("FirstName: " + contact.FirstName + " LastName: " + contact.LastName + " PhoneNumber" + contact.PhoneNumber);
             }
+        }
+        /// <summary>
+        /// UC 23:
+        /// POST api will add multiple contacts to the json file created
+        /// </summary>
+        [TestMethod]
+        public void OnCallingPOSTApi_ShouldAddMultipleContacts()
+        {
+            List<ContactDetails> contactsList = new List<ContactDetails>();
+            contactsList.Add(new ContactDetails
+            {
+                FirstName = "Manish",
+                LastName = "Pandey",
+                PhoneNumber = "2344746584",
+                Email = "mani.com",
+                Area = "maruti colony",
+                City = "Warangal",
+                State = "AndhraPradesh",
+                Country = "India",
+
+            });
+            contactsList.Add(new ContactDetails
+            {
+                FirstName = "Vijay",
+                LastName = "Sankar",
+                PhoneNumber = "2344734597",
+                Email = "vij.com",
+                Area = "Vijaya colony",
+                City = "Khammam",
+                State = "AndhraPradesh",
+                Country = "India",
+
+            });
+            contactsList.ForEach(contact =>
+            {
+                //Arrange
+                RestRequest request = new RestRequest("/contacts", Method.POST);
+                JObject jObjectBody = new JObject();
+                jObjectBody.Add("FirstName", contact.FirstName);
+                jObjectBody.Add("LastName", contact.LastName);
+                jObjectBody.Add("PhoneNumber", contact.PhoneNumber);
+                jObjectBody.Add("City", contact.City);
+                jObjectBody.Add("State", contact.State);
+                jObjectBody.Add("Email", contact.Email);
+                jObjectBody.Add("Country", contact.Country);
+                request.AddParameter("application/json", jObjectBody, ParameterType.RequestBody);
+
+                //Act
+                IRestResponse response = client.Execute(request);
+                ContactDetails dataResponse = JsonConvert.DeserializeObject<ContactDetails>(response.Content);
+                //Assert
+                Assert.AreEqual(response.StatusCode, HttpStatusCode.Created);
+                Assert.AreEqual(contact.FirstName, dataResponse.FirstName);
+                Assert.AreEqual(contact.LastName, dataResponse.LastName);
+                System.Console.WriteLine(response.Content);
+            });
         }
     }
 }
