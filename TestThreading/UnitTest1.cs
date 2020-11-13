@@ -162,5 +162,35 @@ namespace TestThreading
                 System.Console.WriteLine(response.Content);
             });
         }
+        // <summary>
+        /// UC 24:
+        /// PUT api will update contact FirstName and State in the json file
+        /// </summary>
+        [TestMethod]
+        public void OnCallingPUTApi_ShouldUpdateContact()
+        {
+            //Arrange
+            RestRequest request = new RestRequest("/contacts/1", Method.PUT);
+            JObject jObjectBody = new JObject();
+            jObjectBody.Add("FirstName","Mukhesh");
+            jObjectBody.Add("LastName","Attuluri");
+            jObjectBody.Add("PhoneNumber", "8978496720");
+            jObjectBody.Add("City", "Ppm");
+            jObjectBody.Add("State", "Ap");
+            jObjectBody.Add("Email", "mkh.com");
+            jObjectBody.Add("Country", "India");
+
+            request.AddParameter("application/json", jObjectBody, ParameterType.RequestBody);
+
+            //Act
+            IRestResponse response = client.Execute(request);
+
+            //Assert
+            Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
+            ContactDetails dataResponse = JsonConvert.DeserializeObject<ContactDetails>(response.Content);
+            Assert.AreEqual("Mukhesh", dataResponse.FirstName);
+            Assert.AreEqual("Attuluri", dataResponse.LastName);
+            System.Console.WriteLine(response.Content);
+        }
     }
 }
