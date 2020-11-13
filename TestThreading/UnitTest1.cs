@@ -192,5 +192,22 @@ namespace TestThreading
             Assert.AreEqual("Attuluri", dataResponse.LastName);
             System.Console.WriteLine(response.Content);
         }
+        /// <summary>
+        /// UC 25:
+        /// DELETE api will delete contact in the json file
+        /// </summary>
+        [TestMethod]
+        public void OnCallingDELETEApi_ShouldDeleteContact()
+        {
+            //Arrange
+            RestRequest request = new RestRequest("/contacts/2", Method.DELETE);
+
+            //Act
+            IRestResponse response = client.Execute(request);
+
+            //Assert
+            Assert.AreEqual(response.StatusCode, HttpStatusCode.OK);
+            System.Console.WriteLine(response.Content);
+        }
     }
 }
